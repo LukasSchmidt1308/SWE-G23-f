@@ -8,8 +8,6 @@ async function loadComponent(id, file) {
         return;
     }
 
-    container.innerHTML = "<p>Lade...</p>";                         // Platzhalter während des Ladens
-
     try {
         const response = await fetch(file);                         // Datei wird geladen -> in "response" gespeichert
 
