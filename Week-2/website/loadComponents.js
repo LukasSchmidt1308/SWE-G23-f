@@ -26,3 +26,14 @@ async function loadComponent(id, file) {
 
 }
 
+document.addEventListener('DOMContentLoaded', () => {
+
+    loadComponent("banner", "banner.html");
+    loadComponent("login", "login.html");
+
+});
+
+// Export für Tests
+module.exports = {
+    loadComponent
+};

@@ -8,11 +8,11 @@ describe('loadComponents', () => {
     });
 
     it('should include a loadComponent function', () => {
-        expect(typeof (() => loadComponents())).toBe('function');
+        expect(typeof (() => loadComponents)).toBe('function');
     });
 
     it('should load components without throwing', () => {
-        expect(() => loadComponents()).not.toThrow();
+        expect((() => loadComponents)).not.toThrow();
     });
 
     // Add more specific tests based on your implementation
