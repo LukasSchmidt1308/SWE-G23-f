@@ -2,8 +2,13 @@
 const loadComponents = require('../loadComponents');
 
 describe('loadComponents', () => {
+   
     it('should be an object', () => {
         expect(typeof loadComponents).toBe('object');
+    });
+
+    it('should include a loadComponent function', () => {
+        expect(typeof (() => loadComponents())).toBe('function');
     });
 
     it('should load components without throwing', () => {
@@ -17,4 +22,5 @@ describe('loadComponents', () => {
     //   expect(components).toHaveProperty('Header');
     //   expect(components).toHaveProperty('Footer');
     // });
+
 });
