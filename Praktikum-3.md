@@ -6,29 +6,30 @@ Entwicklung eines webbasierten Softwaresystems zur Unterstützung der Pflege und
 
 ---
 
-## Aufgaben und Ziele
+## Anforderungen
 
-- Rollenbasierte Zugriffssteuerung: Admin, Betreuer (Pflegekraft), Patient mit jeweils eigenen Rechten und Ansichten
-- Admin-Funktionen:
-  - Betreuer und Patienten anlegen, bearbeiten, löschen (inkl. persönlicher Daten, Pflegeart, Pflegestation)
-  - Patienten automatisch einem Betreuer der gewählten Station zuweisen (bei häuslicher Pflege Auswahl eines beliebigen Betreuers)
-  - Betreuer verwalten und ihnen Pflegestationen zuweisen
-  - Übersicht über alle Betreuer und Patienten
-- Betreuer-Funktionen:
-  - Login mit individuellem Benutzernamen und Passwort
-  - Jeder Betreuer ist genau einer Pflegestation zugeordnet und kann maximal 24 Patienten betreuen
-  - Betreuer sieht ausschließlich die eigenen Patienten
-  - Erfassung und Bearbeitung der Gesundheitsparameter (Blutdruck, Temperatur, Blutzucker) für die eigenen Patienten
-  - Warnhinweise bei Grenzwertüberschreitungen (Temperatur > 40°C, Blutdruck > 180 oder < 90, Blutzucker > 180 oder < 70) werden als JavaScript-Prompt angezeigt
-  - Alle relevanten Patientendaten und Warnhinweise werden auf einer Übersichtsseite angezeigt
-- Patienten-Funktionen:
-  - Login mit individuellen Zugangsdaten
-  - Patient kann ausschließlich die eigenen Gesundheitsdaten (Blutdruck, Temperatur, Blutzucker) auf einer persönlichen Übersichtsseite einsehen
-  - Patient kann keine eigenen Daten bearbeiten
-- Warnmechanismus:
-  - Bei Überschreitung der definierten Grenzwerte wird ein Warnhinweis als Prompt angezeigt
-- Testkonzept:
-  - Im Uni-Testsystem werden gezielt kritische Gesundheitsparameter gesetzt, um die Funktion des Warnmechanismus zu überprüfen
+### Admin
+- Hat vordefinierten Zugang (Login: admin/admin)
+- Kann Betreuer und Patienten anlegen, bearbeiten und löschen, inklusive persönlicher Daten (Name, Adresse, Geburtsdatum, Kontaktdaten) sowie Pflegetyp (Pflegestation oder häusliche Pflege)
+- Legt bei der Patientenerstellung fest, ob der Patient in einer Pflegestation oder zu Hause betreut wird (Drop-Down-Auswahl mit vorhandenen Stationen sowie „häusliche Pflege“ als Option)
+- Weist Patienten automatisch einem Betreuer der gewählten Station zu; bei häuslicher Pflege kann ein beliebiger Betreuer zugeordnet werden
+- Kann Betreuer verwalten und ihnen Pflegestationen zuweisen
+- Hat Übersicht über alle Betreuer und Patienten im System
+
+### Betreuer (Pflegekräfte)
+- Login mit individuellem Benutzernamen und Passwort
+- Sind jeweils nur einer Pflegestation zugeordnet
+- Können maximal 24 Patienten betreuen
+- Sehen ausschließlich ihre zugewiesenen Patienten
+- Erfassen und bearbeiten die Gesundheitsparameter ihrer Patienten (Blutdruck, Temperatur, Blutzucker)
+- Erhalten Warnhinweise bei Grenzwertüberschreitungen (Temperatur > 40°C, Blutdruck > 180 oder < 90, Blutzucker > 180 oder < 70)
+- Alle wichtigen Informationen zu ihren Patienten – einschließlich Gesundheitsparametern, persönlichen Daten (Name, Adresse, Kontakt) und Warnhinweisen – werden auf einer persönlichen Übersichtsseite angezeigt
+
+### Patient
+- Login mit individuellen Zugangsdaten
+- Können ausschließlich ihre eigenen Gesundheitsdaten (Blutdruck, Temperatur, Blutzucker) auf einer persönlichen Übersichtsseite einsehen
+- Können keine eigenen Daten bearbeiten
+
 
 ---
 
