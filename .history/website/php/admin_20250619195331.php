@@ -120,10 +120,6 @@ $page = $_GET['page'] ?? 'betreuer';
                 <input type="text" placeholder="Name" required>
                 <input type="text" placeholder="Benutzername" required>
                 <input type="password" placeholder="Passwort" required>
-                <input type="text" placeholder="Adresse" required>
-                <input type="date" placeholder="Geburtsdatum" required>
-                <input type="email" placeholder="E-Mail" required>
-                <input type="text" placeholder="Telefonnummer" required>
                 <select required>
                     <option value="">Station wählen</option>
                     <?php foreach ($stationList as $station): ?>
