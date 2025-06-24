@@ -1,0 +1,49 @@
+<?php
+// Include database connection and setup check
+require_once 'php/db.php';
+require_once 'php/setup_check.php';
+
+// Check and setup database if needed
+$setupRan = checkAndSetupDatabase($pdo);
+?>
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Deine Gesundheitsplattform für Patienten und Pflegekräfte!">
+    <title>PflegePro</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js"></script>
+</head>
+<body>
+  <div class="navbar">
+    PflegePro
+  </div>
+  
+  <?php if ($setupRan): ?>
+
+
+  <?php else: ?>
+  <!-- Normal login form -->
+  <div class="container">
+    <div class="left">
+      <img src="img/home.svg" alt="Pflege Symbolbild">
+    </div>
+    <div class="right">
+      <div class="login-box">
+        <h2>Login</h2>
+
+        <form action="php/login.php" method="POST">
+          <label for="username">Benutzername</label>
+          <input type="text" id="username" name="username" required>
+          <label for="password">Passwort</label>
+          <input type="password" id="password" name="password" required>
+          <button type="submit">Anmelden</button>
+        </form>
+      </div>
+    </div>
+  </div>
+  <?php endif; ?>
+</body>
+</html>

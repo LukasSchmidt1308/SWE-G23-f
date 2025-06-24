@@ -1,27 +1,19 @@
 <?php
-// db.php
-// MySQLi-Verbindungsdatei – passe die Werte für Host, User, Passwort und DB-Name an
+// PflegePro - University Praktikum Project
+// Database connection using PDO and PostgreSQL
+
+// Database connection parameters
 $dbHost = "localhost";
-$dbUser = "root";
-$dbPass = "";
+$dbUser = "postgres";  
+$dbPass = "admin";
 $dbName = "pflegepro";
-$mysqli = "";
-//$dbPort = 3306;
+$dbPort = "5432";
 
-// Verbindung aufbauen
-$mysqli = mysqli_connect($dbHost, $dbUser, $dbPass, $dbName);
-
-// Prüfen, ob’s geklappt hat
-if ($mysqli) {
-    echo"You are connected";
+try {
+    $pdo = new PDO("pgsql:host=$dbHost;port=$dbPort;dbname=$dbName", $dbUser, $dbPass);
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    die("Database connection failed: " . $e->getMessage());
 }
-  else{
-    echo"could not connected";
-  }
-
-// UTF-8 einstellen
-//$conn->set_charset('utf8mb4');
-
-
 ?>
-

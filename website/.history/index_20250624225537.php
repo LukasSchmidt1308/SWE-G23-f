@@ -1,0 +1,67 @@
+<?php
+// Include database connection and setup check
+require_once 'php/db.php';
+require_once 'php/setup_check.php';
+
+// Check and setup database if needed
+$setupRan = checkAndSetupDatabase($pdo);
+?>
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Deine Gesundheitsplattform für Patienten und Pflegekräfte!">
+    <title>PflegePro</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js"></script>
+</head>
+<body>
+  <div class="navbar">
+    PflegePro
+  </div>
+  
+  <?php if ($setupRan): ?>
+  <!-- Show setup completion message with login info -->
+  <div class="container">
+    <div style="text-align: center; padding: 20px;">
+      <h2>🎉 PflegePro ist bereit!</h2>
+      <p>Verwenden Sie diese Test-Accounts:</p>
+      <div style="background: #f9f9f9; padding: 15px; margin: 20px; border-radius: 5px;">
+        <strong>👤 Admin:</strong> admin / admin<br>
+        <strong>🏥 Betreuer:</strong> betreuer / betreuer<br>
+        <strong>🛏️ Patient:</strong> patient / patient
+      </div>
+      <a href="index.php" style="background: #4CAF50; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Zur Anmeldung</a>
+    </div>
+  </div>
+  <?php else: ?>
+  <!-- Normal login form -->
+  <div class="container">
+    <div class="left">
+      <img src="img/home.svg" alt="Pflege Symbolbild">
+    </div>
+    <div class="right">
+      <div class="login-box">
+        <h2>Login</h2>
+        <form action="php/login.php" method="POST">
+          <label for="username">Benutzername</label>
+          <input type="text" id="username" name="username" required>
+          <label for="password">Passwort</label>
+          <input type="password" id="password" name="password" required>
+          <button type="submit">Anmelden</button>
+        </form>
+        
+        <!-- Show test accounts info -->
+        <div style="margin-top: 20px; padding: 15px; background: #f0f8ff; border-radius: 5px; font-size: 0.9em;">
+          <strong>Test-Accounts:</strong><br>
+          Admin: admin / admin<br>
+          Betreuer: betreuer / betreuer<br>
+          Patient: patient / patient
+        </div>
+      </div>
+    </div>
+  </div>
+  <?php endif; ?>
+</body>
+</html>
