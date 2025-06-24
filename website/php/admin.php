@@ -109,17 +109,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $name = $_POST['name'] ?? '';
         
         if (empty($name)) {
-            header("Location: admin.php?page=stationen&error=missing_fields");
+            header("Location: admin.php?page=stationen");
             exit();
         }
         
         try {
             $stmt = $pdo->prepare("INSERT INTO Station (Name, Adresse) VALUES (?, '')");
             $stmt->execute([$name]);
-            header("Location: admin.php?page=stationen&success=station_created");
+            header("Location: admin.php?page=stationen");
             exit();
         } catch (PDOException $e) {
-            header("Location: admin.php?page=stationen&error=db_error");
+            header("Location: admin.php?page=stationen");
             exit();
         }
     }
@@ -211,41 +211,6 @@ if ($page === 'betreuer') {
     
 
     <div class="container" style="max-width: 1100px; margin: 2rem auto;">
-
-        <?php 
-        // Show error/success messages
-        if (isset($_GET['error'])) {
-            echo "<div style='background: #ffe6e6; color: #d00; padding: 10px; margin: 10px 0; border-radius: 5px;'>";
-            switch ($_GET['error']) {
-                case 'username_exists':
-                    echo "❌ Dieser Benutzername existiert bereits. Bitte wählen Sie einen anderen.";
-                    break;
-                case 'missing_fields':
-                    echo "❌ Bitte füllen Sie alle Pflichtfelder aus.";
-                    break;
-                case 'db_error':
-                    echo "❌ Datenbankfehler. Bitte versuchen Sie es später erneut.";
-                    break;
-                default:
-                    echo "❌ Ein Fehler ist aufgetreten.";
-            }
-            echo "</div>";
-        }
-        if (isset($_GET['success'])) {
-            echo "<div style='background: #e6ffe6; color: #0a0; padding: 10px; margin: 10px 0; border-radius: 5px;'>";
-            switch ($_GET['success']) {
-                case 'betreuer_created':
-                    echo "✅ Betreuer wurde erfolgreich erstellt.";
-                    break;
-                case 'patient_created':
-                    echo "✅ Patient wurde erfolgreich erstellt.";
-                    break;
-                default:
-                    echo "✅ Aktion erfolgreich durchgeführt.";
-            }
-            echo "</div>";
-        }
-        ?>
 
         <?php if ($page === 'betreuer'): ?>
         <section class="admin-section">
