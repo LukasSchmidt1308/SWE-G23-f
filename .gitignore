@@ -1,0 +1,37 @@
+# VS Code History Extension
+.history/
+**/.history/
+
+# VS Code settings
+.vscode/
+**/.vscode/
+
+# Temporary files
+*.tmp
+*.temp
+
+# Debug files
+debug_*.php
+test_*.php
+diagnostic*.php
+
+# Database backups
+*.sql.bak
+*.db.bak
+
+# Logs
+*.log
+error.log
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Windows
+[Dd]esktop.ini
+$RECYCLE.BIN/
