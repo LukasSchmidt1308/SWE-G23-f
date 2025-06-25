@@ -52,8 +52,8 @@ $warnings = $stmt->fetchAll();
 if (!$healthData) {
     $healthData = [
         'blutdruck' => 'Noch nicht gemessen',
-        'temperatur' => 0,
-        'blutzucker' => 0,
+        'temperatur' => null,
+        'blutzucker' => null,
         'datum' => null
     ];
 }
@@ -116,11 +116,11 @@ if (!$healthData) {
                     </div>
                     <div>
                         <span class="label">Temperatur:</span>
-                        <span><?php echo $healthData['temperatur'] > 0 ? $healthData['temperatur'] . '°C' : 'Noch nicht gemessen'; ?></span>
+                        <span><?php echo $healthData['temperatur'] !== null ? $healthData['temperatur'] . '°C' : 'Noch nicht gemessen'; ?></span>
                     </div>
                     <div>
                         <span class="label">Blutzucker:</span>
-                        <span><?php echo $healthData['blutzucker'] > 0 ? $healthData['blutzucker'] . ' mg/dl' : 'Noch nicht gemessen'; ?></span>
+                        <span><?php echo $healthData['blutzucker'] !== null ? $healthData['blutzucker'] . ' mg/dl' : 'Noch nicht gemessen'; ?></span>
                     </div>
                 </div>
                 <div class="warn-section">

@@ -35,13 +35,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         
         // Check for warnings
         $warnings = [];
-        if ($temperatur > 40) {
-            $warnings[] = "Hohe Temperatur: {$temperatur}°C";
+        if ($temperatur > 40 || $temperatur < 35) {
+            if ($temperatur > 40) {
+                $warnings[] = "Hohe Temperatur: {$temperatur}°C";
+            } else {
+                $warnings[] = "Niedrige Temperatur: {$temperatur}°C";
+            }
         }
         if (strpos($blutdruck, '/') !== false) {
             $parts = explode('/', $blutdruck);
             $systolic = (int)$parts[0];
             $diastolic = isset($parts[1]) ? (int)$parts[1] : 0;
+            // Check for both high and low blood pressure
             if ($systolic > 180 || $systolic < 90 || ($diastolic > 0 && ($diastolic > 120 || $diastolic < 60))) {
                 $warnings[] = "Kritischer Blutdruck: {$blutdruck}";
             }

@@ -21,6 +21,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stationID = $_POST['station_id'] ?? '';
         $maxPatienten = (int)($_POST['max_patienten'] ?? 24);
         
+        // Validate max patients (limit to reasonable range)
+        if ($maxPatienten < 1 || $maxPatienten > 50) {
+            $maxPatienten = 24; // Reset to default if invalid
+        }
+        
         // Validate required fields
         if (empty($name) || empty($username) || empty($password) || empty($email) || empty($telefon) || empty($stationID)) {
             header("Location: admin.php?page=betreuer");
@@ -68,19 +73,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
         $password = password_hash($password, PASSWORD_DEFAULT);
         
+        // Validate betreuer and station compatibility
+        if ($betreuerID && $stationID) {
+            $stmt = $pdo->prepare("SELECT stationid FROM betreuer WHERE betreuerid = ?");
+            $stmt->execute([$betreuerID]);
+            $betreuerStation = $stmt->fetch();
+            
+            if ($betreuerStation && $betreuerStation['stationid'] != $stationID) {
+                header("Location: admin.php?page=patienten&error=station_mismatch");
+                exit();
+            }
+        }
+        
         // Auto-assign betreuer if no specific betreuer is selected
         if (!$betreuerID) {
-            // Find any betreuer with less than 24 patients
+            // Find betreuer in same station or any available betreuer
+            $whereClause = $stationID ? "WHERE b.stationid = ?" : "";
+            $params = $stationID ? [$stationID] : [];
+            
             $stmt = $pdo->prepare("
-                SELECT b.betreuerid, COUNT(p.patientid) as patient_count
+                SELECT b.betreuerid, COUNT(p.patientid) as patient_count, b.maxpatienten
                 FROM betreuer b 
                 LEFT JOIN patient p ON b.betreuerid = p.betreuerid
-                GROUP BY b.betreuerid
-                HAVING COUNT(p.patientid) < 24
+                $whereClause
+                GROUP BY b.betreuerid, b.maxpatienten
+                HAVING COUNT(p.patientid) < b.maxpatienten
                 ORDER BY patient_count ASC
                 LIMIT 1
             ");
-            $stmt->execute();
+            $stmt->execute($params);
             $availableBetreuer = $stmt->fetch();
             if ($availableBetreuer) {
                 $betreuerID = $availableBetreuer['betreuerid'];
@@ -126,16 +147,87 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 } elseif (isset($_GET['action']) && $_GET['action'] === 'delete') {
     $id = (int)$_GET['id'];
     if ($page === 'betreuer') {
-        // Betreuer löschen - PostgreSQL syntax
-        $stmt = $pdo->prepare("DELETE FROM Betreuer WHERE BetreuerID = ?");
+        // Check if betreuer has assigned patients
+        $stmt = $pdo->prepare("SELECT COUNT(*) FROM patient WHERE betreuerid = ?");
         $stmt->execute([$id]);
+        $patientCount = $stmt->fetchColumn();
+        
+        if ($patientCount > 0) {
+            // First reassign patients to other available betreuer or set to null
+            $stmt = $pdo->prepare("
+                SELECT b.betreuerid, COUNT(p.patientid) as patient_count, b.maxpatienten
+                FROM betreuer b 
+                LEFT JOIN patient p ON b.betreuerid = p.betreuerid
+                WHERE b.betreuerid != ?
+                GROUP BY b.betreuerid, b.maxpatienten
+                HAVING COUNT(p.patientid) < b.maxpatienten
+                ORDER BY patient_count ASC
+                LIMIT 1
+            ");
+            $stmt->execute([$id]);
+            $availableBetreuer = $stmt->fetch();
+            
+            if ($availableBetreuer) {
+                // Reassign patients to available betreuer
+                $stmt = $pdo->prepare("UPDATE patient SET betreuerid = ? WHERE betreuerid = ?");
+                $stmt->execute([$availableBetreuer['betreuerid'], $id]);
+            } else {
+                // No available betreuer, set to null (häusliche Pflege)
+                $stmt = $pdo->prepare("UPDATE patient SET betreuerid = NULL WHERE betreuerid = ?");
+                $stmt->execute([$id]);
+            }
+        }
+        
+        // Delete betreuer and associated user
+        $stmt = $pdo->prepare("SELECT benutzerid FROM betreuer WHERE betreuerid = ?");
+        $stmt->execute([$id]);
+        $benutzerData = $stmt->fetch();
+        
+        $stmt = $pdo->prepare("DELETE FROM betreuer WHERE betreuerid = ?");
+        $stmt->execute([$id]);
+        
+        if ($benutzerData) {
+            $stmt = $pdo->prepare("DELETE FROM benutzer WHERE benutzerid = ?");
+            $stmt->execute([$benutzerData['benutzerid']]);
+        }
         
     } elseif ($page === 'patienten') {
-        $stmt = $pdo->prepare("DELETE FROM Patient WHERE PatientID = ?");
+        // Delete patient and associated user
+        $stmt = $pdo->prepare("SELECT benutzerid FROM patient WHERE patientid = ?");
+        $stmt->execute([$id]);
+        $benutzerData = $stmt->fetch();
+        
+        $stmt = $pdo->prepare("DELETE FROM patient WHERE patientid = ?");
         $stmt->execute([$id]);
         
+        if ($benutzerData) {
+            $stmt = $pdo->prepare("DELETE FROM benutzer WHERE benutzerid = ?");
+            $stmt->execute([$benutzerData['benutzerid']]);
+        }
+        
     } elseif ($page === 'stationen') {
-        $stmt = $pdo->prepare("DELETE FROM Station WHERE StationID = ?");
+        // Check if station has assigned betreuer or patients
+        $stmt = $pdo->prepare("SELECT COUNT(*) FROM betreuer WHERE stationid = ?");
+        $stmt->execute([$id]);
+        $betreuerCount = $stmt->fetchColumn();
+        
+        $stmt = $pdo->prepare("SELECT COUNT(*) FROM patient WHERE stationid = ?");
+        $stmt->execute([$id]);
+        $patientCount = $stmt->fetchColumn();
+        
+        if ($betreuerCount > 0) {
+            // Cannot delete station with assigned betreuer
+            header("Location: admin.php?page=$page&error=station_has_betreuer");
+            exit();
+        }
+        
+        if ($patientCount > 0) {
+            // Move patients to "Häusliche Pflege" (set station to null)
+            $stmt = $pdo->prepare("UPDATE patient SET stationid = NULL WHERE stationid = ?");
+            $stmt->execute([$id]);
+        }
+        
+        $stmt = $pdo->prepare("DELETE FROM station WHERE stationid = ?");
         $stmt->execute([$id]);
     }
     header("Location: admin.php?page=$page");
@@ -209,6 +301,23 @@ if ($page === 'betreuer') {
         <a href="?page=stationen" class="<?= $page === 'stationen' ? 'active' : '' ?>">Stationen verwalten</a>
     </div>
     
+    <!-- Error Messages -->
+    <?php if (isset($_GET['error'])): ?>
+        <div style="background: #ffe6e6; color: #d00; padding: 15px; margin: 20px auto; border-radius: 5px; max-width: 1100px; border: 1px solid #ff4444;">
+            <?php 
+            switch ($_GET['error']) {
+                case 'station_has_betreuer':
+                    echo "❌ Station kann nicht gelöscht werden: Es sind noch Betreuer zugeordnet.";
+                    break;
+                case 'station_mismatch':
+                    echo "❌ Der gewählte Betreuer arbeitet nicht in der gewählten Station.";
+                    break;
+                default:
+                    echo "❌ Ein Fehler ist aufgetreten.";
+            }
+            ?>
+        </div>
+    <?php endif; ?>
 
     <div class="container" style="max-width: 1100px; margin: 2rem auto;">
 
