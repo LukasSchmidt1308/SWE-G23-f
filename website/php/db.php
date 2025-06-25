@@ -4,8 +4,8 @@
 
 // Database connection parameters
 $dbHost = "localhost";
-$dbUser = "postgres";  
-$dbPass = "admin";
+$dbUser = "pflegepro_user";  
+$dbPass = "secure_password123";
 $dbName = "pflegepro";
 $dbPort = "5432";
 
@@ -14,6 +14,7 @@ try {
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
-    die("Database connection failed: " . $e->getMessage());
+    // Database connection failed - set to null for setup_check to handle
+    $pdo = null;
 }
 ?>

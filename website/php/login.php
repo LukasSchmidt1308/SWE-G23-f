@@ -8,7 +8,11 @@ require_once 'db.php';
 $username = $_POST['username'] ?? '';
 $password = $_POST['password'] ?? '';
 
+// Debug: Log login attempts
+error_log("Login attempt: username='$username', password length=" . strlen($password));
+
 if (empty($username) || empty($password)) {
+    error_log("Login failed: empty fields");
     header('Location: ../index.php?error=empty');
     exit();
 }
@@ -20,9 +24,12 @@ try {
     $user = $stmt->fetch();
     
     if (!$user || !password_verify($password, $user['passwort'])) {
+        error_log("Login failed: invalid credentials for user '$username'");
         header('Location: ../index.php?error=invalid');
         exit();
     }
+    
+    error_log("Login successful for user '$username' with role '" . $user['rolle'] . "'");
     
     // Login successful - set session
     $_SESSION['user_id'] = $user['benutzerid'];

@@ -1,7 +1,16 @@
 <?php
 require_once 'php/db.php';
 require_once 'php/setup_check.php';
-checkAndSetupDatabase($pdo);
+$setupSuccess = checkAndSetupDatabase($pdo);
+
+// If $pdo is still null after setup, show error
+if ($pdo === null) {
+    echo "<div style='background: #ffe6e6; padding: 20px; margin: 20px; border: 1px solid #ff4444; border-radius: 5px;'>";
+    echo "<h3>❌ Database connection not available</h3>";
+    echo "<p>Please check your PostgreSQL installation and try again.</p>";
+    echo "</div>";
+    exit();
+}
 ?>
 <!DOCTYPE html>
 <html lang="de">

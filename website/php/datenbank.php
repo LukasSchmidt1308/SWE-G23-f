@@ -1,11 +1,16 @@
 <?php
-// Don't require db.php if it's already included (when called from setup_check.php)
-if (!isset($pdo) && !isset($mysqli)) {
-    require_once 'db.php';
+// Database setup script for PflegePro
+// This script creates all tables and sample data
+
+// Use the global $pdo connection
+if (!isset($pdo) && !isset($GLOBALS['pdo'])) {
+    die("Database connection not available");
 }
 
-// Use the correct database connection variable
-$dbConnection = isset($pdo) ? $pdo : $mysqli;
+// Use global PDO if local PDO is not available
+if (!isset($pdo) && isset($GLOBALS['pdo'])) {
+    $pdo = $GLOBALS['pdo'];
+}
 
 $sql = [
     // Drop existing tables first (in correct order due to foreign keys)
@@ -124,13 +129,13 @@ $sql = [
 try {
     // Execute each SQL statement
     foreach ($sql as $statement) {
-        $dbConnection->exec($statement);
+        $pdo->exec($statement);
     }
     
     // Insert sample data for easy testing
     
     // Insert sample stations
-    $dbConnection->exec("INSERT INTO Station (Name, Adresse) VALUES 
+    $pdo->exec("INSERT INTO Station (Name, Adresse) VALUES 
         ('Station A', 'Erdgeschoss Links'),
         ('Station B', '1. Stock Mitte'),
         ('Station C', '2. Stock Rechts')");
@@ -141,17 +146,17 @@ try {
     $patientPass = password_hash('patient', PASSWORD_DEFAULT);
     $betreuerPass = password_hash('betreuer', PASSWORD_DEFAULT);
     
-    $dbConnection->exec("INSERT INTO Benutzer (Name, Rolle, Benutzername, Passwort, Kontaktdaten) VALUES 
+    $pdo->exec("INSERT INTO Benutzer (Name, Rolle, Benutzername, Passwort, Kontaktdaten) VALUES 
         ('Administrator', 'admin', 'admin', '$adminPass', 'admin@pflegepro.de'),
         ('Max Mustermann', 'Patient', 'patient', '$patientPass', 'patient@test.de / 0123456789'),
         ('Maria Pflegerin', 'Betreuer', 'betreuer', '$betreuerPass', 'betreuer@pflegepro.de')");
     
     // Insert sample Betreuer
-    $dbConnection->exec("INSERT INTO Betreuer (BenutzerID, StationID, MaxPatienten) VALUES 
+    $pdo->exec("INSERT INTO Betreuer (BenutzerID, StationID, MaxPatienten) VALUES 
         (3, 1, 5)"); // Maria Pflegerin assigned to Station A with max 5 patients
     
     // Insert sample Patient
-    $dbConnection->exec("INSERT INTO Patient (BenutzerID, Adresse, Geburtsdatum, Pflegeart, StationID, BetreuerID) VALUES 
+    $pdo->exec("INSERT INTO Patient (BenutzerID, Adresse, Geburtsdatum, Pflegeart, StationID, BetreuerID) VALUES 
         (2, 'Musterstraße 123, 12345 Stadt', '1980-01-15', 'Grundpflege', 1, 1)"); // Max Mustermann
     
     echo "Datenbank und Tabellen erfolgreich erstellt!<br>";
