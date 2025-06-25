@@ -38,7 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         if ($temperatur > 40) {
             $warnings[] = "Hohe Temperatur: {$temperatur}°C";
         }
-         if ($temperatur < 36.6) {
+        if ($temperatur < 36.6) {
             $warnings[] = "Niedrige Temperatur: {$temperatur}°C";
         }
         if (strpos($blutdruck, '/') !== false) {
@@ -154,7 +154,7 @@ if ($patientID) {
     <div class="subnav">
         <a href="?page=overview&patient=<?= $patientID ?>" class="<?= $page === 'overview' ? 'active' : '' ?>" onclick="checkWarningsAndPrompt()">Übersicht</a>
         <?php if ($patientID): ?>
-        <a href="?page=warn&patient=<?= $patientID ?>" class="<?= $page === 'warn' ? 'active' : '' ?>">Warnparameter setzen</a>
+        <a href="?page=warn&patient=<?= $patientID ?>" class="<?= $page === 'warn' ? 'active' : '' ?>">Gesundheitsparameter setzen</a>
         <?php endif; ?>
         <?php if (!empty($patients)): ?>
         <form style="display:inline;" method="get">
@@ -238,7 +238,7 @@ if ($patientID) {
             <?php elseif ($page === 'warn' && $currentPatient): ?>
                 <div class="patient-card">
                     <div class="patient-header">
-                        <h3>Warnparameter setzen für <?= htmlspecialchars($currentPatient['name']) ?></h3>
+                        <h3>Gesundheitsparameter setzen für <?= htmlspecialchars($currentPatient['name']) ?></h3>
                     </div>
                     <form method="post">
                         <input type="hidden" name="action" value="update_health">
