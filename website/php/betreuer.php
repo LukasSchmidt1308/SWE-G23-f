@@ -38,6 +38,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         if ($temperatur > 40) {
             $warnings[] = "Hohe Temperatur: {$temperatur}°C";
         }
+         if ($temperatur < 36.6) {
+            $warnings[] = "Niedrige Temperatur: {$temperatur}°C";
+        }
         if (strpos($blutdruck, '/') !== false) {
             $parts = explode('/', $blutdruck);
             $systolic = (int)$parts[0];
