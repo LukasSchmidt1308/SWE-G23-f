@@ -33,6 +33,49 @@ For this project, the following Visual Studio Code extensions are recommended to
   Search for **Prettier - Code formatter** and install it.
 
 ---
+# PHP + PostgreSQL Installation Guide
+## Prerequisites
+- Windows 10/11
+- Visual Studio Code
+- VS Code PHP Server extension
+- PHP installed on your system
+## Step 1: PHP Configuration
+### 1.1 Find your PHP Installation
+- Open PowerShell and run:``where php``
+- Example output: php.exe
+### 1.2 Create php.ini File
+- Navigate to your PHP installation directory (e.g., php) and create a new file called ``php.ini`` with this content:
+![image](https://github.com/user-attachments/assets/932bd717-8a1a-4af3-85fd-20fd849c47e6)
+### 1.3 Verify PHP Configuration
+- Open PowerShell and run: ``php --ini``
+- Should show: ``Loaded Configuration File: C:\php\php.ini``
+## Step 2: PostgreSQL Installation
+### 2.1 Download PostgreSQL
+1. Go to: https://www.postgresql.org/download/windows/
+2. Click "Download the installer"
+3. Download PostgreSQL 16 (latest stable version)
+### 2.2 Install PostgreSQL
+Run the installer as Administrator and use these exact settings:
+- Installation Directory: Keep default (C:\Program Files\PostgreSQL\16\)
+- Data Directory: Keep default
+- Password: admin
+- Port: 5432 (keep default)
+- Locale: Keep default
+Components Selection:
+- [x] PostgreSQL Server (required)
+- [x] pgAdmin 4 (database management tool)
+- [ ] Stack Builder (uncheck this - not needed)
+### 2.3 After Installation
+PostgreSQL will automatically:
+- Install as a Windows service
+- Start the service
+- Be ready to accept connections on port 5432
+# Installation Complete
+Your system is now ready with:
+- PHP with PostgreSQL PDO extension
+- PostgreSQL server running on port 5432
+- Default credentials: postgres / admin
+---
 
 > **Important:** These extensions enhance your coding environment but **do not include the PHP runtime itself**. To run PHP code and use the PHP Server extension properly, you must install the PHP runtime manually on your system.  
 > 
